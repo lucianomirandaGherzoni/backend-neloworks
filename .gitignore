@@ -1,0 +1,15 @@
+# --- DEPENDENCIAS  ---
+node_modules/
+
+# --- SEGURIDAD  ---
+.env
+
+# --- LOGS (Archivos de errores) ---
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+
+# --- VERCEL ---
+.vercel
