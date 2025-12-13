@@ -40,7 +40,7 @@ export const procesarVenta = async (req, res) => {
 // --- CONTROLADOR 2: CONTACTO (CON IMAGEN DE DISEÑO) ---
 export const enviarContacto = async (req, res) => {
     // Multer pone los campos de texto en req.body y el archivo en req.file
-    const { nombre, email, message } = req.body;
+    const { nombre, email, phone, message } = req.body;
     const archivo = req.file; 
 
     try {
@@ -55,7 +55,7 @@ export const enviarContacto = async (req, res) => {
             to: EMAIL_ADMIN,
             subject: `📩 Nuevo Mensaje de: ${nombre}`,
             reply_to: email,
-            html: plantillaContacto(nombre, email, message),
+            html: plantillaContacto(nombre, email, phone, message),
             attachments: attachments // <--- Aquí va la imagen del diseño
         });
 
