@@ -12,12 +12,10 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 } // Límite de 5MB
 });
 
-router.post('/procesar-venta', procesarVenta);
+router.post('/procesar-venta', upload.single('comprobante'), procesarVenta);
 
 
 router.post('/contacto', upload.single('archivo_adjunto'), enviarContacto);
 
-
-router.post('/notificar-transferencia', upload.single('comprobante'), procesarPagoTransferencia);
 
 export default router;
