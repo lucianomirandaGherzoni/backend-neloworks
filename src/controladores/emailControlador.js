@@ -70,7 +70,8 @@ export const enviarContacto = async (req, res) => {
 
 // --- CONTROLADOR 3: TRANSFERENCIA (CON COMPROBANTE) ---
 export const procesarPagoTransferencia = async (req, res) => {
-    const { nombre, email, total, pedido } = req.body;
+    // Agregamos 'telefono' para recibirlo del frontend
+    const { nombre, email, telefono, total, pedido } = req.body;
     const archivo = req.file;
 
     if (!archivo) {
@@ -86,6 +87,7 @@ export const procesarPagoTransferencia = async (req, res) => {
                 <h1>Se ha reportado un nuevo pago</h1>
                 <p><strong>Cliente:</strong> ${nombre}</p>
                 <p><strong>Email:</strong> ${email}</p>
+                <p><strong>Teléfono:</strong> ${telefono}</p>
                 <p><strong>Monto Total:</strong> $${total}</p>
                 <p><strong>ID Pedido:</strong> ${pedido}</p>
                 <hr />

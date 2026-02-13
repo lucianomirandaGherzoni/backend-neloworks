@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import rutasEmail from './src/rutas/emailRutas.js'; 
 import rutasPago from './src/rutas/pagoRutas.js';
+import rutasEnvio from './src/rutas/envioRutas.js';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ app.use(cors());
 app.use(express.json());
 
 // Usamos el prefijo /api para las rutas
+app.use('/api/envio', rutasEnvio);
 app.use('/api', rutasEmail);
 app.use('/api', rutasPago);
 
