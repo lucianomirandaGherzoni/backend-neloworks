@@ -133,3 +133,47 @@ export const calcularEnvio = async (req, res) => {
         });
     }
 };
+
+export const obtenerSucursales = async (req, res) => {
+    const provinceCode = req.query.provinceCode || req.body?.provinceCode;
+
+    if (!provinceCode) {
+        return res.status(400).json({ error: 'Falta el parámetro provinceCode.' });
+    }
+
+    try {
+        const token = await obtenerToken();
+
+        const url = new URL(`${process.env.CORREO_API_URL}/agencies`);
+        url.searchParams.set('customerId', process.env.CORREO_CUSTOMER_ID);
+        url.searchParams.set('provinceCode', provinceCode);
+        url.searchParams.set('services', 'package_reception');
+
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` },
+        });
+
+        if (!response.ok) {
+            const errText = await response.text();
+            console.error(`[Correo Argentino /agencies] HTTP ${response.status}:`, errText);
+            return res.status(502).json({
+                error: 'Error al obtener sucursales de Correo Argentino. Intentá de nuevo.',
+            });
+        }
+
+        const data = await response.json();
+
+        const sucursales = (Array.isArray(data) ? data : []).filter(
+            (s) => s.status === 'ACTIVE' && s.services?.packageReception === true
+        );
+
+        res.json({ sucursales });
+
+    } catch (error) {
+        console.error('[obtenerSucursales] Error:', error.message);
+        res.status(502).json({
+            error: 'Error al contactar con Correo Argentino. Intentá de nuevo.',
+        });
+    }
+};
