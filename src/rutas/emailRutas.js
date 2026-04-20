@@ -5,22 +5,30 @@ import { enviarContacto, procesarPagoTransferencia, procesarVenta } from '../con
 
 const router = Router();
 
-// Configuración de Multer: Guardar en memoria
+const TIPOS_PERMITIDOS = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'application/pdf'];
+
+const fileFilter = (req, file, cb) => {
+    if (TIPOS_PERMITIDOS.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Tipo de archivo no permitido. Solo JPG, PNG, GIF o PDF.'), false);
+    }
+};
+
 const storage = multer.memoryStorage();
 const upload = multer({ 
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 } // Límite de 5MB
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter,
 });
 
 // Ruta 1: Venta normal (JSON) - Sin archivos
 router.post('/procesar-venta', procesarVenta);
 
 // Ruta 2: Contacto - Imagen opcional
-// El frontend debe usar name="archivo_adjunto" en el input file
 router.post('/contacto', upload.single('archivo_adjunto'), enviarContacto);
 
 // Ruta 3: Transferencia - Imagen obligatoria
-// El frontend debe usar name="comprobante" en el input file
 router.post('/notificar-transferencia', upload.single('comprobante'), procesarPagoTransferencia);
 
 export default router;

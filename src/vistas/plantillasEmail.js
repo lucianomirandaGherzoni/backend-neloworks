@@ -108,7 +108,27 @@ export const plantillaCliente = (nombre, codigo, productosHtml, total, direccion
 `);
 
 // 2. PLANTILLA ADMIN
-export const plantillaAdminVenta = (cliente, codigo, productosHtml, total, metodoPago) => envolverHTML(`
+export const plantillaAdminVenta = (cliente, codigo, productosHtml, total, metodoPago, envio) => {
+  // Armar bloque de envío
+  const costoEnvioTexto = envio?.costo ? `$${envio.costo}` : 'Gratis'
+  let detalleEnvioHtml = ''
+  if (envio?.esSucursal && envio?.sucursalNombre) {
+    detalleEnvioHtml = `
+      <tr><td style="padding: 4px 0;"><span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">Tipo</span><p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">Entrega en Sucursal Correo Argentino</p></td></tr>
+      <tr><td style="padding: 4px 0;"><span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">Sucursal</span><p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">${envio.sucursalNombre}</p></td></tr>
+      ${envio.sucursalDireccion ? `<tr><td style="padding: 4px 0;"><span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">Dirección Sucursal</span><p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">${envio.sucursalDireccion}</p></td></tr>` : ''}
+      ${envio.codigoPostal ? `<tr><td style="padding: 4px 0;"><span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">CP Destino</span><p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">${envio.codigoPostal}</p></td></tr>` : ''}
+    `
+  } else if (envio?.direccionDomicilio) {
+    detalleEnvioHtml = `
+      <tr><td style="padding: 4px 0;"><span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">Tipo</span><p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">Envío a Domicilio (Correo Argentino)</p></td></tr>
+      <tr><td style="padding: 4px 0;"><span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">Dirección</span><p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">${envio.direccionDomicilio}</p></td></tr>
+    `
+  } else {
+    detalleEnvioHtml = `<tr><td style="padding: 4px 0;"><span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">Tipo</span><p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">Retiro en Local</p></td></tr>`
+  }
+
+  return envolverHTML(`
   <div style="${estilos.container}">
     <div style="${estilos.card}">
       <div style="${estilos.header}">
@@ -128,10 +148,19 @@ export const plantillaAdminVenta = (cliente, codigo, productosHtml, total, metod
             </td>
           </tr>
         </table>
-        <div style="background-color: #f4f4f4; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
-            <p style="margin: 0; font-size: 14px; color: ${c.negro};"><strong>Contacto:</strong></p>
-            <p style="margin: 5px 0 0 0; font-size: 14px; color: ${c.negro};">${cliente.email} | ${cliente.telefono}</p>
+        <div style="background-color: ${c.negro}; padding: 15px; margin-bottom: 20px; border-radius: 4px;">
+            <p style="margin: 0; font-size: 14px; color: ${c.blanco};"><strong>Contacto:</strong></p>
+            <p style="margin: 5px 0 0 0; font-size: 14px; color: ${c.blanco};">${cliente.email} | ${cliente.telefono}</p>
         </div>
+
+        <h3 style="font-size: 14px; text-transform: uppercase; border-bottom: 2px solid ${c.negro}; padding-bottom: 8px; margin-bottom: 12px; color: ${c.negro};">Datos de Envío</h3>
+        <div style="background-color: ${c.negro}; padding: 15px; margin-bottom: 20px; border-radius: 4px; color: ${c.blanco};">
+          <table style="width: 100%;">
+            <tr><td style="padding: 4px 0;"><span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">Servicio</span><p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">${envio?.metodoNombre || 'Sin especificar'} — ${costoEnvioTexto}</p></td></tr>
+            ${detalleEnvioHtml}
+          </table>
+        </div>
+
         <hr style="border: 0; border-top: 1px dashed ${c.gris}; margin: 20px 0;" />
         <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
             ${productosHtml}
@@ -142,7 +171,7 @@ export const plantillaAdminVenta = (cliente, codigo, productosHtml, total, metod
       </div>
     </div>
   </div>
-`);
+`)};
 
 // 3. PLANTILLA CONTACTO (Sin teléfono)
 export const plantillaContacto = (nombre, email, mensaje) => envolverHTML(`
@@ -153,19 +182,65 @@ export const plantillaContacto = (nombre, email, mensaje) => envolverHTML(`
       </div>
       <div style="${estilos.body}">
         <h2 style="${estilos.h1}">Nuevo Mensaje</h2>
-        <div style="margin-bottom: 20px; margin-top: 20px;">
-           <span style="${estilos.label}">Remitente</span>
-           <p style="${estilos.data}"><strong>${nombre}</strong></p>
-           <p style="color: ${c.gris}; margin: 0;">${email}</p>
+        <div style="background-color: ${c.negro}; padding: 15px; margin-bottom: 20px; margin-top: 20px; border-radius: 4px;">
+           <span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; font-weight: bold;">Remitente</span>
+           <p style="font-size: 16px; color: ${c.blanco}; margin: 0; font-weight: 500;">${nombre}</p>
+           <p style="color: #aaa; margin: 4px 0 0 0; font-size: 14px;">${email}</p>
         </div>
         <span style="${estilos.label}">Mensaje</span>
-        <div style="background-color: #f9f9f9; border: 1px solid #eee; padding: 20px; margin-top: 5px; color: ${c.oscuro}; font-style: italic;">
+        <div style="background-color: ${c.negro}; border-left: 4px solid ${c.amarillo}; padding: 20px; margin-top: 5px; color: ${c.blanco}; font-style: italic; border-radius: 4px;">
           "${mensaje}"
         </div>
         
         <div style="margin-top: 30px; text-align: center;">
            <a href="mailto:${email}" style="${estilos.btnLink}">Responder Email</a>
         </div>
+      </div>
+    </div>
+  </div>
+`);
+
+// 4. PLANTILLA TRANSFERENCIA ADMIN
+export const plantillaTransferencia = (nombre, email, telefono, total, pedido) => envolverHTML(`
+  <div style="${estilos.container}">
+    <div style="${estilos.card}">
+      <div style="${estilos.header}">
+        ${logoHtml}
+      </div>
+      <div style="${estilos.body}">
+        <h2 style="${estilos.h1}">Comprobante de Transferencia</h2>
+        <p style="color: ${c.gris}; margin-bottom: 24px;">Se recibió un comprobante de pago. Verificar antes de confirmar el pedido.</p>
+
+        <div style="background-color: ${c.negro}; padding: 15px; border-radius: 4px; margin-bottom: 20px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 8px 0; border-bottom: 1px solid #333;">
+                <span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; font-weight: bold;">Cliente</span>
+                <span style="font-size: 15px; color: ${c.blanco}; font-weight: 600;">${nombre}</span>
+              </td>
+              <td style="padding: 8px 0; border-bottom: 1px solid #333; text-align: right;">
+                <span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; font-weight: bold;">Pedido</span>
+                <span style="font-size: 15px; color: ${c.amarillo}; font-weight: 600;">#${pedido}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 8px 0; border-bottom: 1px solid #333;">
+                <span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; font-weight: bold;">Email</span>
+                <span style="font-size: 15px; color: ${c.blanco};">${email}</span>
+              </td>
+              <td style="padding: 8px 0; border-bottom: 1px solid #333; text-align: right;">
+                <span style="display: block; font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; font-weight: bold;">Teléfono</span>
+                <span style="font-size: 15px; color: ${c.blanco};">${telefono || '—'}</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="${estilos.totalBox}">
+          MONTO: $${total}
+        </div>
+
+        <p style="margin-top: 20px; font-size: 13px; color: ${c.gris}; text-align: center;">El comprobante se encuentra adjunto a este correo.</p>
       </div>
     </div>
   </div>

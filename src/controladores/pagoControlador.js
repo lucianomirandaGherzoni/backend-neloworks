@@ -4,36 +4,52 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// 1. Configuración del cliente (como en el minuto 23:40 del video)
 const client = new MercadoPagoConfig({
   accessToken: process.env.MP_ACCESS_TOKEN
 });
 
 export const crearPreferencia = async (req, res) => {
   try {
-    const { items } = req.body; // El frontend te debe mandar un array de productos
+    const { items } = req.body;
 
-    // 2. Objeto de preferencia (según video min 25:00)
+    // Validar que items sea un array no vacío
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Se requiere al menos un producto.' });
+    }
+
+    // Validar cada item: precio positivo, cantidad positiva, título presente
+    for (const item of items) {
+      const precio = Number(item.price);
+      const cantidad = Number(item.quantity);
+      if (!item.title || typeof item.title !== 'string' || item.title.trim() === '') {
+        return res.status(400).json({ error: 'Datos de producto inválidos.' });
+      }
+      if (!isFinite(precio) || precio <= 0) {
+        return res.status(400).json({ error: 'Precio de producto inválido.' });
+      }
+      if (!isFinite(cantidad) || cantidad < 1 || !Number.isInteger(cantidad)) {
+        return res.status(400).json({ error: 'Cantidad de producto inválida.' });
+      }
+    }
+
     const body = {
       items: items.map(item => ({
-        title: item.title,
+        title: String(item.title).slice(0, 256),
         quantity: Number(item.quantity),
         unit_price: Number(item.price),
-        currency_id: 'ARS', // Cambia a tu moneda si no eres de Arg
+        currency_id: 'ARS',
       })),
       back_urls: {
-        success: "https://neloworks.com/confirmacion?status=approved", // Redirige a tu web
+        success: "https://neloworks.com/confirmacion?status=approved",
         failure: "https://neloworks.com/cart",
         pending: "https://neloworks.com/cart"
       },
       auto_return: "approved",
     };
 
-    // 3. Crear la preferencia
     const preference = new Preference(client);
     const result = await preference.create({ body });
 
-    // 4. Devolver el ID al frontend (para que muestre el botón)
     res.json({ id: result.id });
 
   } catch (error) {
@@ -41,9 +57,3 @@ export const crearPreferencia = async (req, res) => {
     res.status(500).json({ error: 'Error al crear la preferencia de pago' });
   }
 };
-
-/*       */
-
-/*                 success: "localhost:5173/confirmacion?status=approved", // <--- Tu puerto local
-        failure: "localhost:5173/cart",
-        pending: "localhost:5173/cart" */

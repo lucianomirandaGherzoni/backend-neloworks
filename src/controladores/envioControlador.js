@@ -71,7 +71,7 @@ export const calcularEnvio = async (req, res) => {
         if (!process.env[varName]) {
             console.error(`[ERROR] Variable de entorno no definida: ${varName}`);
             return res.status(500).json({
-                error: `Configuración incompleta en el servidor: falta ${varName}`,
+                error: 'El servicio de envío no está disponible en este momento.',
             });
         }
     }
