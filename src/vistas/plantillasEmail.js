@@ -16,9 +16,9 @@ const c = {
 const estilos = {
     container: `background-color: ${c.fondoEmail}; padding: 40px 20px; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; width: 100%;`,
     card: `max-width: 600px; margin: 0 auto; background-color: ${c.blanco}; color: ${c.negro}; border: 1px solid ${c.grisBorde};`,
-    header: `padding: 32px 30px 24px; text-align: left; border-bottom: 1px solid ${c.grisBorde};`,
+    header: `padding: 32px 30px 24px; text-align: center; background-color: ${c.negro}; border-bottom: 1px solid ${c.negro};`,
     body: `padding: 36px 30px; color: ${c.negro}; line-height: 1.7; background-color: ${c.blanco};`,
-    footer: `text-align: center; padding: 24px 30px; font-size: 11px; color: ${c.grisMedio}; border-top: 1px solid ${c.grisBorde}; letter-spacing: 0.5px;`,
+    footer: `text-align: center; padding: 24px 30px; font-size: 11px; color: ${c.grisMedio}; background-color: ${c.fondoEmail}; letter-spacing: 0.5px;`,
     h1: `margin: 0 0 8px 0; color: ${c.negro}; font-size: 22px; font-weight: 700; letter-spacing: -0.3px;`,
     label: `display: block; font-size: 10px; color: ${c.grisMedio}; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 3px; font-weight: 600;`,
     data: `font-size: 15px; color: ${c.negro}; margin: 0; font-weight: 500;`,
@@ -29,8 +29,8 @@ const estilos = {
 };
 
 const logoHtml = `
-  <a href="${WEB_URL}" target="_blank" style="text-decoration: none;">
-    <img src="${LOGO_URL}" alt="Nelo Works" style="max-height: 40px; display: block; border: 0; outline: none; text-decoration: none;" />
+  <a href="${WEB_URL}" target="_blank" style="text-decoration: none; display: inline-block;">
+    <img src="${LOGO_URL}" alt="Nelo Works" style="max-height: 44px; display: block; margin: 0 auto; border: 0; outline: none; text-decoration: none;" />
   </a>
 `;
 
