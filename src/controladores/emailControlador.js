@@ -33,7 +33,7 @@ export const procesarVenta = async (req, res) => {
             from: 'Nelo Works <info@neloworks.com>',
             to: datosCliente.email,
             subject: `Pedido Confirmado #${escHtml(datosPedido.codigoEnvio)}`,
-            html: plantillaCliente(escHtml(datosCliente.nombre), escHtml(datosPedido.codigoEnvio), productosHtml, escHtml(totales.total), escHtml(datosCliente.direccion))
+            html: plantillaCliente(escHtml(datosCliente.nombre), escHtml(datosPedido.codigoEnvio), productosHtml, escHtml(totales.total), escHtml(datosCliente.direccion), envio?.costo ?? 0, escHtml(envio?.piso), escHtml(envio?.depto), escHtml(envio?.notaEntrega))
         });
 
         const emailAdmin = resend.emails.send({
